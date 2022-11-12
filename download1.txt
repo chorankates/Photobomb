@@ -1,0 +1,15 @@
+POST /printer HTTP/1.1
+Host: photobomb.htb
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:101.0) Gecko/20100101 Firefox/101.0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8
+Accept-Language: en-US,en;q=0.5
+Accept-Encoding: gzip, deflate
+Content-Type: application/x-www-form-urlencoded
+Content-Length: 78
+Origin: http://photobomb.htb
+Authorization: Basic cEgwdDA6YjBNYiE=
+Connection: close
+Referer: http://photobomb.htb/printer
+Upgrade-Insecure-Requests: 1
+
+photo=voicu-apostol-MWER49YaD-M-unsplash.jpg&filetype=png&dimensions=1000x1500

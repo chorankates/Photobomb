@@ -1,0 +1,49 @@
+HTTP/1.1 200 OK
+Server: nginx/1.18.0 (Ubuntu)
+Date: Sat, 12 Nov 2022 21:02:13 GMT
+Content-Type: text/html;charset=utf-8
+Connection: close
+X-Xss-Protection: 1; mode=block
+X-Content-Type-Options: nosniff
+X-Frame-Options: SAMEORIGIN
+Content-Length: 4915
+
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Photobomb</title>
+  <link type="text/css" rel="stylesheet" href="styles.css" media="all" />
+</head>
+<body>
+  <div id="container">
+    <header>
+      <h1><a href="/">Photobomb</a></h1>
+    </header>
+    <form id="photo-form" action="/printer" method="post">
+      <h3>Select an image</h3>
+      <fieldset id="image-wrapper">
+      <input type="radio" name="photo" value="voicu-apostol-MWER49YaD-M-unsplash.jpg" id="voicu-apostol-MWER49YaD-M-unsplash.jpg" checked="checked" /><label for="voicu-apostol-MWER49YaD-M-unsplash.jpg" style="background-image: url(ui_images/voicu-apostol-MWER49YaD-M-unsplash.jpg)"></label><input type="radio" name="photo" value="masaaki-komori-NYFaNoiPf7A-unsplash.jpg" id="masaaki-komori-NYFaNoiPf7A-unsplash.jpg"/><label for="masaaki-komori-NYFaNoiPf7A-unsplash.jpg" style="background-image: url(ui_images/masaaki-komori-NYFaNoiPf7A-unsplash.jpg)"></label><input type="radio" name="photo" value="andrea-de-santis-uCFuP0Gc_MM-unsplash.jpg" id="andrea-de-santis-uCFuP0Gc_MM-unsplash.jpg"/><label for="andrea-de-santis-uCFuP0Gc_MM-unsplash.jpg" style="background-image: url(ui_images/andrea-de-santis-uCFuP0Gc_MM-unsplash.jpg)"></label><input type="radio" name="photo" value="tabitha-turner-8hg0xRg5QIs-unsplash.jpg" id="tabitha-turner-8hg0xRg5QIs-unsplash.jpg"/><label for="tabitha-turner-8hg0xRg5QIs-unsplash.jpg" style="background-image: url(ui_images/tabitha-turner-8hg0xRg5QIs-unsplash.jpg)"></label><input type="radio" name="photo" value="nathaniel-worrell-zK_az6W3xIo-unsplash.jpg" id="nathaniel-worrell-zK_az6W3xIo-unsplash.jpg"/><label for="nathaniel-worrell-zK_az6W3xIo-unsplash.jpg" style="background-image: url(ui_images/nathaniel-worrell-zK_az6W3xIo-unsplash.jpg)"></label><input type="radio" name="photo" value="kevin-charit-XZoaTJTnB9U-unsplash.jpg" id="kevin-charit-XZoaTJTnB9U-unsplash.jpg"/><label for="kevin-charit-XZoaTJTnB9U-unsplash.jpg" style="background-image: url(ui_images/kevin-charit-XZoaTJTnB9U-unsplash.jpg)"></label><input type="radio" name="photo" value="calvin-craig-T3M72YMf2oc-unsplash.jpg" id="calvin-craig-T3M72YMf2oc-unsplash.jpg"/><label for="calvin-craig-T3M72YMf2oc-unsplash.jpg" style="background-image: url(ui_images/calvin-craig-T3M72YMf2oc-unsplash.jpg)"></label><input type="radio" name="photo" value="eleanor-brooke-w-TLY0Ym4rM-unsplash.jpg" id="eleanor-brooke-w-TLY0Ym4rM-unsplash.jpg"/><label for="eleanor-brooke-w-TLY0Ym4rM-unsplash.jpg" style="background-image: url(ui_images/eleanor-brooke-w-TLY0Ym4rM-unsplash.jpg)"></label><input type="radio" name="photo" value="finn-whelen-DTfhsDIWNSg-unsplash.jpg" id="finn-whelen-DTfhsDIWNSg-unsplash.jpg"/><label for="finn-whelen-DTfhsDIWNSg-unsplash.jpg" style="background-image: url(ui_images/finn-whelen-DTfhsDIWNSg-unsplash.jpg)"></label><input type="radio" name="photo" value="almas-salakhov-VK7TCqcZTlw-unsplash.jpg" id="almas-salakhov-VK7TCqcZTlw-unsplash.jpg"/><label for="almas-salakhov-VK7TCqcZTlw-unsplash.jpg" style="background-image: url(ui_images/almas-salakhov-VK7TCqcZTlw-unsplash.jpg)"></label><input type="radio" name="photo" value="mark-mc-neill-4xWHIpY2QcY-unsplash.jpg" id="mark-mc-neill-4xWHIpY2QcY-unsplash.jpg"/><label for="mark-mc-neill-4xWHIpY2QcY-unsplash.jpg" style="background-image: url(ui_images/mark-mc-neill-4xWHIpY2QcY-unsplash.jpg)"></label><input type="radio" name="photo" value="wolfgang-hasselmann-RLEgmd1O7gs-unsplash.jpg" id="wolfgang-hasselmann-RLEgmd1O7gs-unsplash.jpg"/><label for="wolfgang-hasselmann-RLEgmd1O7gs-unsplash.jpg" style="background-image: url(ui_images/wolfgang-hasselmann-RLEgmd1O7gs-unsplash.jpg)"></label>
+      </fieldset>
+      <fieldset id="image-settings">
+      <label for="filetype">File type</label>
+      <select name="filetype" title="JPGs work on most printers, but some people think PNGs give better quality">
+        <option value="jpg">JPG</option>
+        <option value="png">PNG</option>
+        </select>
+      <div class="product-list">
+        <input type="radio" name="dimensions" value="3000x2000" id="3000x2000" checked="checked"/><label for="3000x2000">3000x2000 - mousemat</label>
+        <input type="radio" name="dimensions" value="1000x1500" id="1000x1500"/><label for="1000x1500">1000x1500 - mug</label>
+        <input type="radio" name="dimensions" value="600x400" id="600x400"/><label for="600x400">600x400 - phone cover</label>
+        <input type="radio" name="dimensions" value="300x200" id="300x200"/><label for="300x200">300x200 - keyring</label>
+        <input type="radio" name="dimensions" value="150x100" id="150x100"/><label for="150x100">150x100 - usb stick</label>
+        <input type="radio" name="dimensions" value="30x20" id="30x20"/><label for="30x20">30x20 - micro SD card</label>
+      </div>
+      </fieldset>
+      <div class="controls">
+        <button type="submit">download photo to print</button>
+      </div>
+    </form>
+  </div>
+</body>
+</html>
+
